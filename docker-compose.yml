@@ -1,0 +1,12 @@
+version: "0.1"
+services:
+  web:
+    build: web
+    ports:
+      - 80:80
+    depends_on:
+      - bangserver
+  bangserver:
+    build: https://github.com/salvoilmiosi/banggameserver.git
+    ports:
+      - 47654:47654
