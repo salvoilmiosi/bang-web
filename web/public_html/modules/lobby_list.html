@@ -4,9 +4,15 @@
         <script defer type="text/javascript" src="/js/lobby_list.js"></script>
     </head>
     <body>
-        <h2>Benvenuto!</h2>
-        <p>
+        <h2>Bang!</h2>
+        <div class="button_row">
             <button id="disconnect">Disconnetti</button>
-        </p>
+        </div>
+        <form id="make_lobby_form">
+            <label for="lobby_name">Nome Lobby:</label>
+            <input type="text" id="lobby_name">
+            <button type="Submit">Crea Lobby</button>
+        </form>
+        <div id="lobby_list_container"></div>
     </body>
 </html>
