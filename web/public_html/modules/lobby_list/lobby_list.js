@@ -1,6 +1,6 @@
-$("#disconnect").click(client_manager.disconnect);
+$("#disconnect").click(() => client_manager.disconnect());
 
-$("#make_lobby_form").submit((ev) => {
+$("#make_lobby_form").submit(ev => {
     ev.preventDefault();
 
     let name = $("#lobby_name").val();
@@ -57,7 +57,7 @@ function send_join_lobby(id) {
     client_manager.push_message("lobby_join", {lobby_id:id});
 }
 
-client_manager.add_message_handler("lobby_update", (args) => {
+client_manager.add_message_handler("lobby_update", args => {
     if (args.num_players == 0) {
         remove_lobby_item(args.lobby_id);
     } else {
