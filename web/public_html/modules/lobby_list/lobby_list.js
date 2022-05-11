@@ -9,48 +9,41 @@ $("#make_lobby_form").submit(ev => {
     }
 });
 
-var $lobby_list_container = $("#lobby_list_container");
-var lobby_list = {};
+var $lobby_list = $("#lobby_list_container");
 
-function remove_lobby_item(id) {
-    if (id in lobby_list) {
-        lobby_list[id].tag.remove();
-        delete lobby_list[id];
-    }
+function find_lobby_item(id) {
+    return $lobby_list.find(`*[data-lobby_id="${id}"]`);
 }
 
 function update_lobby_item(args) {
-    var item;
-    if (!(args.lobby_id in lobby_list)) {
-        item = lobby_list[args.lobby_id] = {};
-        item.tag = $("<div>");
-        item.tag.addClass("lobby_item");
+    let tag = find_lobby_item(args.lobby_id);
+    if (tag.length == 0) {
+        tag = $(`<div data-lobby_id="${args.lobby_id}">`);
+        tag.addClass("lobby_item");
 
         let text_name = $("<span>");
-        item.tag.append(text_name);
+        tag.append(text_name);
 
         let text_nplayers = $("<span>");
-        item.tag.append(text_nplayers);
+        tag.append(text_nplayers);
 
         text_state = $("<span>");
-        item.tag.append(text_state);
+        tag.append(text_state);
 
         let button_join = $("<button>");
         button_join.text("Entra");
         button_join.click(() => send_join_lobby(args.lobby_id));
-        item.tag.append(button_join);
+        tag.append(button_join);
 
-        item.update = (name, num_players, state) => {
+        tag.data("update", (name, num_players, state) => {
             text_name.text(name);
             text_nplayers.text(`${num_players}/8`);
             text_state.text(state);
-        };
+        });
 
-        $lobby_list_container.append(item.tag);
-    } else {
-        item = lobby_list[args.lobby_id];
+        $lobby_list.append(tag);
     }
-    item.update(args.name, args.num_players, args.state);
+    tag.data("update")(args.name, args.num_players, args.state);
 }
 
 function send_join_lobby(id) {
@@ -59,7 +52,7 @@ function send_join_lobby(id) {
 
 client_manager.add_message_handler("lobby_update", args => {
     if (args.num_players == 0) {
-        remove_lobby_item(args.lobby_id);
+        find_lobby_item(args.lobby_id).remove();
     } else {
         update_lobby_item(args);
     }
