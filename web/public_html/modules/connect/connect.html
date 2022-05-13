@@ -2,10 +2,16 @@
 <html>
     <head>
         <script defer type="text/javascript" src="modules/connect/connect.js"></script>
+        <link rel="stylesheet" href="modules/connect/connect.css">
     </head>
     <body>
         <h2>Bang!</h2>
         <form id="connect_form">
+            <div class="form_row">
+                <label for="propic_file">Immagine del profilo:</label>
+                <img hidden id="propic">
+                <input type="file" id="propic_file" accept="image/*">
+            </div>
             <div class="form_row">
                 <label for="user_name">Nome utente:</label>
                 <input type="text" id="user_name">

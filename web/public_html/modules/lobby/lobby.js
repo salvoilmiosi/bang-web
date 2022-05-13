@@ -30,6 +30,10 @@ client_manager.add_message_handler("lobby_edited", update_lobby_info);
 
 client_manager.add_message_handler("lobby_add_user", args => {
     let tag = $(`<div data-user_id="${args.user_id}">`);
+    if (client_manager.users[args.user_id].propic) {
+        tag.append(client_manager.users[args.user_id].propic);
+    }
+
     let user_name = $("<span>");
     user_name.text(args.name);
     tag.append(user_name);

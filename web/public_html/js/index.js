@@ -8,11 +8,6 @@ function show_message(message) {
     console.log(message);
 }
 
-function deserialize_propic(propic) {
-    // TODO
-    return null;
-}
-
 let client_manager = {
     ws: null,
     in_queue: [],
@@ -36,7 +31,7 @@ let client_manager = {
         },
         "lobby_add_user": function(args) {
             show_message(`${args.name} entra nella lobby`);
-            this.users[args.user_id] = {name:args.name, propic:deserialize_propic(args.propic)};
+            this.users[args.user_id] = {name:args.name, propic:deserialize_image(args.profile_image)};
         },
         "lobby_remove_user": function(args) {
             if (args.user_id == this.user_own_id) {
@@ -50,8 +45,8 @@ let client_manager = {
         "lobby_chat": function(args) {
             show_message(`${this.users[args.user_id].name}: ${args.message}`);
         },
-        "game_started": function() {
-            this.load_scene("game");
+        "game_started": function(args) {
+            this.load_scene("game", () => init_game(args));
         }
     },
 
@@ -68,20 +63,16 @@ let client_manager = {
     },
 
     connect(onopen) {
-        try {
-            this.ws = new WebSocket("ws://" + location.hostname + ":47654");
-            this.ws.onopen = () => onopen();
-            this.ws.onclose = this.ws.onerror = () => {
-                this.ws = null;
-                this.load_scene("connect");
-            };
-            this.ws.onmessage = ev => {
-                this.in_queue.push(JSON.parse(ev.data));
-                this.handle_messages();
-            };
-        } catch (error) {
-            show_error("Errore in connessione");
-        }
+        this.ws = new WebSocket("ws://" + location.hostname + ":47654");
+        this.ws.onopen = () => onopen();
+        this.ws.onclose = this.ws.onerror = () => {
+            this.ws = null;
+            this.load_scene("connect");
+        };
+        this.ws.onmessage = ev => {
+            this.in_queue.push(JSON.parse(ev.data));
+            this.handle_messages();
+        };
     },
 
     disconnect() {
