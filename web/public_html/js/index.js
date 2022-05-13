@@ -13,7 +13,7 @@ function deserialize_propic(propic) {
     return null;
 }
 
-let client_manager = Object.create({
+let client_manager = {
     ws: null,
     in_queue: [],
     lock_messages: false,
@@ -55,7 +55,7 @@ let client_manager = Object.create({
         }
     },
 
-    load_scene: function(name, complete) {
+    load_scene(name, complete) {
         this.lock_messages = true;
         this.scene_message_handlers = {};
         $("#content").load(`/modules/${name}/${name}.html`, () => {
@@ -67,7 +67,7 @@ let client_manager = Object.create({
         });
     },
 
-    connect: function(onopen) {
+    connect(onopen) {
         try {
             this.ws = new WebSocket("ws://" + location.hostname + ":47654");
             this.ws.onopen = () => onopen();
@@ -84,19 +84,19 @@ let client_manager = Object.create({
         }
     },
 
-    disconnect: function() {
+    disconnect() {
         if (this.ws) {
             this.ws.close();
         }
     },
 
-    push_message: function(type, value) {
+    push_message(type, value) {
         if (this.ws) {
             this.ws.send(JSON.stringify({type:type,value:value}));
         }
     },
 
-    handle_messages: function() {
+    handle_messages() {
         while (this.in_queue.length > 0 && !this.lock_messages) {
             let data = this.in_queue.shift();
             if (data.type in this.message_handlers) {
@@ -108,9 +108,9 @@ let client_manager = Object.create({
         }
     },
 
-    add_message_handler: function(type, fun) {
+    add_message_handler(type, fun) {
         this.scene_message_handlers[type] = fun;
     }
-});
+};
 
 $(document).ready(() => client_manager.load_scene("connect"));
