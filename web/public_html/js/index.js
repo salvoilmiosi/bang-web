@@ -9,7 +9,6 @@ function show_message(message) {
 }
 
 let client_manager = {
-    ws: null,
     in_queue: [],
     lock_messages: false,
 
@@ -51,11 +50,18 @@ let client_manager = {
     },
 
     load_scene(name, complete) {
+        if (this.scene_object) {
+            this.scene_object.cleanup();
+            this.scene_object = null;
+        }
         this.lock_messages = true;
         this.scene_message_handlers = {};
         $("#content").load(`/modules/${name}/${name}.html`, () => {
             if (complete) {
-                complete();
+                let ret = complete();
+                if (ret != undefined) {
+                    this.scene_object = ret;
+                }
             }
             this.lock_messages = false;
             this.handle_messages();
@@ -65,9 +71,14 @@ let client_manager = {
     connect(onopen) {
         this.ws = new WebSocket("ws://" + location.hostname + ":47654");
         this.ws.onopen = () => onopen();
-        this.ws.onclose = this.ws.onerror = () => {
+        this.ws.onclose = () => {
             this.ws = null;
             this.load_scene("connect");
+        };
+        this.ws.onerror = (error) => {
+            show_error("WebSocket Error");
+            this.ws = null;
+            this.load("connect");
         };
         this.ws.onmessage = ev => {
             this.in_queue.push(JSON.parse(ev.data));
