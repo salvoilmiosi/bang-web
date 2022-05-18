@@ -1,3 +1,3 @@
-[submodule "web/public_html/img/cards"]
-	path = web/public_html/img/cards
+[submodule "bang_cards"]
+	path = web/img/cards
 	url = http://github.com/salvoilmiosi/bang-cards
